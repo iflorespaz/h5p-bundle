@@ -4,6 +4,9 @@ namespace Studit\H5PBundle\Editor;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Studit\H5PBundle\Entity\Event;
+use Studit\H5PBundle\Entity\LibrariesHubCache;
+use Studit\H5PBundle\Entity\Library;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class EditorAjax implements \H5PEditorAjaxInterface
@@ -35,7 +38,7 @@ class EditorAjax implements \H5PEditorAjaxInterface
      */
     public function getLatestLibraryVersions()
     {
-        return $this->manager->getRepository('StuditH5PBundle:Library')->findLatestLibraryVersions();
+        return $this->manager->getRepository(Library::class)->findLatestLibraryVersions();
     }
 
 
@@ -51,11 +54,11 @@ class EditorAjax implements \H5PEditorAjaxInterface
     {
         // Get only the specified content type from cache
         if ($machineName !== NULL) {
-            $contentTypeCache = $this->manager->getRepository('StuditH5PBundle:LibrariesHubCache')->findOneBy(['machineName' => $machineName]);
+            $contentTypeCache = $this->manager->getRepository(LibrariesHubCache::class)->findOneBy(['machineName' => $machineName]);
             return [$contentTypeCache];
         }
         // Get all cached content types
-        return $this->manager->getRepository('StuditH5PBundle:LibrariesHubCache')->findAll();
+        return $this->manager->getRepository(LibrariesHubCache::class)->findAll();
     }
 
     /**
@@ -69,7 +72,7 @@ class EditorAjax implements \H5PEditorAjaxInterface
         $recentlyUsed = [];
         $user = $this->tokenStorage->getToken()->getUser();
         if (is_object($user)) {
-            $events = $this->manager->getRepository('StuditH5PBundle:Event')->findRecentlyUsedLibraries($user->getId());
+            $events = $this->manager->getRepository(Event::class)->findRecentlyUsedLibraries($user->getId());
             foreach ($events as $event) {
                 $recentlyUsed[] = $event['libraryName'];
             }
